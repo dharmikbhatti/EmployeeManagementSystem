@@ -1,7 +1,8 @@
-const Header = ({data}) => {
+const Header = ({ data }) => {
+    console.log(data.adminName)
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        // localStorage.removeItem('token');
+        // localStorage.removeItem('user');
         window.location.href = '/login';
     };
 
@@ -16,7 +17,7 @@ const Header = ({data}) => {
                                 <span className="text-2xl text-gray-800 font-bold tracking-wide">Welcome,</span>
                                 <span className="relative">
                                     <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent font-bold hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 transition-colors duration-300">
-                                        {data.firstName}
+                                        {data.role === "admin" ? data.adminName : data.firstName}
                                     </span>
                                     <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
                                 </span>
@@ -36,17 +37,17 @@ const Header = ({data}) => {
                         {/* Profile Section */}
                         <div className="relative">
                             <button className="flex items-center space-x-3 bg-gradient-to-r from-white/30 to-white/50 backdrop-blur-sm px-6 py-3 rounded-2xl hover:from-white/40 hover:to-white/60 transition-all duration-300 hover:scale-105 active:scale-95 group border border-white/20 shadow-lg hover:shadow-xl">
-                                <img 
-                                    src="https://api.dicebear.com/6.x/avataaars/svg?seed=Felix" 
-                                    alt="avatar" 
-                                    className="w-8 h-8 rounded-xl shadow-md group-hover:shadow-lg transition-all ring-2 ring-white/50 group-hover:ring-white/70" 
+                                <img
+                                    src="https://api.dicebear.com/6.x/avataaars/svg?seed=Felix"
+                                    alt="avatar"
+                                    className="w-8 h-8 rounded-xl shadow-md group-hover:shadow-lg transition-all ring-2 ring-white/50 group-hover:ring-white/70"
                                 />
-                                <span className="hidden md:block text-sm font-semibold text-gray-700 group-hover:text-gray-900 tracking-wide">{data.firstName}</span>
+                                <span className="hidden md:block text-sm font-semibold text-gray-700 group-hover:text-gray-900 tracking-wide">{data.role === "admin" ? data.adminName : data.firstName}</span>
                             </button>
                         </div>
 
                         {/* Logout Button */}
-                        <button 
+                        <button
                             onClick={handleLogout}
                             className="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transform hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg hover:shadow-xl"
                         >

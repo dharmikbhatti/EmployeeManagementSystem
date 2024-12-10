@@ -12,21 +12,20 @@ const TaskList = ({ data }) => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {data.tasks.map((e, idx) => {
-
+                    {data?.tasks?.map((e, idx) => {
                         if (e.active) {
-                            return <AcceptTask key={idx} />
+                            return <AcceptTask key={idx} task={e} data={data} />
                         }
                         if (e.isNew) {
-                            return <NewTask key={idx} />
+                            return <NewTask key={idx} task={e} data={data}/>
                         }
                         if (e.completed) {
-                            return <CompleteTask key={idx} />
+                            return <CompleteTask key={idx} task={e} data={data}/>
                         }
                         if (e.failed) {
-                            return <FailedTask key={idx} />
+                            return <FailedTask key={idx} task={e} data={data}/>
                         }
-
+                        return null;
                     })}
                 </div>
             </div>

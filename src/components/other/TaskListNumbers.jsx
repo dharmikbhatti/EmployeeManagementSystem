@@ -5,7 +5,7 @@ import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 
-const TaskListNumbers = ({data}) => {
+const TaskListNumbers = ({data}) => {   
     return (
         <div className="container mx-auto px-4 py-12">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

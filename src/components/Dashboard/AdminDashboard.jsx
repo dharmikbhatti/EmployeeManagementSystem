@@ -1,13 +1,12 @@
-import AllTask from "../other/AllTask";
-import CreateTask from "../other/CreateTask";
+import AllTask from "../other/AllTask"; 
 import Header from "../other/Header";
 
-const AdminDashboard = () => {
+const AdminDashboard = ({data}) => {
+  console.log(data)
   return (
     <>
-      <div className="p-10">
-        <Header />
-        {/* <CreateTask /> */}
+      <div className="h-screen w-screen p-10">
+        <Header data={data}/>
         <AllTask />
       </div>
     </>
