@@ -14,16 +14,16 @@ const TaskList = ({ data }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {data?.tasks?.map((e, idx) => {
                         if (e.active) {
-                            return <AcceptTask key={idx} task={e} data={data} />
+                            return <AcceptTask key={idx} task={e} data={e} />
                         }
                         if (e.isNew) {
-                            return <NewTask key={idx} task={e} data={data}/>
+                            return <NewTask key={idx} task={e} data={e}/>
                         }
                         if (e.completed) {
-                            return <CompleteTask key={idx} task={e} data={data}/>
+                            return <CompleteTask key={idx} task={e} data={e}/>
                         }
                         if (e.failed) {
-                            return <FailedTask key={idx} task={e} data={data}/>
+                            return <FailedTask key={idx} task={e} data={e}/>
                         }
                         return null;
                     })}
