@@ -1,4 +1,6 @@
 import React from 'react'
+import { RiDashboardLine, RiTaskLine, RiBarChartLine, RiLogoutBoxRLine } from 'react-icons/ri'
+import { FiMenu } from 'react-icons/fi'
 
 const Header = ({ data }) => {
     const handleLogout = () => {
@@ -37,22 +39,24 @@ const Header = ({ data }) => {
                             className="sm:hidden w-full px-3 py-1.5 bg-white/30 rounded-xl mb-2 flex items-center justify-between"
                         >
                             <span className="text-gray-700 text-sm font-medium">Menu</span>
-                            <svg 
-                                className={`w-5 h-5 transition-transform duration-300 ${isMenuOpen ? 'rotate-180' : ''}`}
-                                fill="none" 
-                                stroke="currentColor" 
-                                viewBox="0 0 24 24"
-                            >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
+                            <FiMenu className={`w-5 h-5 transition-transform duration-300 ${isMenuOpen ? 'rotate-180' : ''}`} />
                         </button>
 
                         {/* Navigation Links */}
                         <div className={`w-full sm:w-auto sm:ml-8 ${isMenuOpen ? 'block' : 'hidden sm:block'}`}>
                             <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-4">
-                                <a href="#" className="w-full sm:w-auto text-center px-4 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-white/60 hover:text-gray-900 hover:scale-105 transition-all duration-300 active:scale-95">Dashboard</a>
-                                <a href="#tasklist" className="w-full sm:w-auto text-center px-4 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-white/60 hover:text-gray-900 hover:scale-105 transition-all duration-300 active:scale-95">Tasks</a>
-                                <a href="#" className="w-full sm:w-auto text-center px-4 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-white/60 hover:text-gray-900 hover:scale-105 transition-all duration-300 active:scale-95">Analytics</a>
+                                <a href="#" className="w-full sm:w-auto text-center px-4 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-white/60 hover:text-gray-900 hover:scale-105 transition-all duration-300 active:scale-95 flex items-center gap-2">
+                                    <RiDashboardLine className="w-4 h-4" />
+                                    Dashboard
+                                </a>
+                                <a href="#tasklist" className="w-full sm:w-auto text-center px-4 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-white/60 hover:text-gray-900 hover:scale-105 transition-all duration-300 active:scale-95 flex items-center gap-2">
+                                    <RiTaskLine className="w-4 h-4" />
+                                    Tasks
+                                </a>
+                                <a href="#" className="w-full sm:w-auto text-center px-4 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-white/60 hover:text-gray-900 hover:scale-105 transition-all duration-300 active:scale-95 flex items-center gap-2">
+                                    <RiBarChartLine className="w-4 h-4" />
+                                    Analytics
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -76,8 +80,9 @@ const Header = ({ data }) => {
                         {/* Logout Button */}
                         <button
                             onClick={handleLogout}
-                            className="px-3 sm:px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-xl hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transform hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg hover:shadow-xl whitespace-nowrap"
+                            className="px-3 sm:px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-xl hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transform hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg hover:shadow-xl whitespace-nowrap flex items-center gap-2"
                         >
+                            <RiLogoutBoxRLine className="w-4 h-4" />
                             Logout
                         </button>
                     </div>

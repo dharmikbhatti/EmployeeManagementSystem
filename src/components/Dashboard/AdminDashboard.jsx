@@ -1,5 +1,4 @@
 import AllTask from "../other/AllTask";
-import CreateTask from "../other/CreateTask";
 import Header from "../other/Header";
 
 const AdminDashboard = ({ data }) => {
@@ -8,7 +7,6 @@ const AdminDashboard = ({ data }) => {
     <>
       <div className="h-screen w-screen p-10">
         <Header data={data} />
-        <CreateTask />
         <AllTask />
       </div>
     </>
