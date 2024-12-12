@@ -1,10 +1,12 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { AuthContext } from '../../context/AuthProvider'
 import { IoAddCircleOutline } from "react-icons/io5"
 
-const AllTask = () => {
+const AllTask = ({ data }) => {
     const authData = useContext(AuthContext)
     const [showCreateTask, setShowCreateTask] = useState(false)
+    const [employees, setEmployees] = useState([])
+    const [categories, setCategories] = useState([])
     const [taskData, setTaskData] = useState({
         category: '',
         date: '',
@@ -12,6 +14,61 @@ const AllTask = () => {
         description: '',
         assignedTo: ''
     })
+
+    // Load data on initial render and when localStorage changes
+    useEffect(() => {
+        const loadData = () => {
+            const employeeData = JSON.parse(localStorage.getItem('employees')) || []
+            
+            // Get any new tasks from newAddedData and merge them
+            const newAddedData = JSON.parse(localStorage.getItem('newAddedData')) || []
+            
+            if (newAddedData.length > 0) {
+                newAddedData.forEach(newTask => {
+                    const employeeIndex = employeeData.findIndex(emp => emp.firstName === newTask.assignedTo)
+                    if (employeeIndex !== -1) {
+                        // Check if task already exists to avoid duplicates
+                        const taskExists = employeeData[employeeIndex].tasks.some(task => 
+                            task.title === newTask.title && 
+                            task.date === newTask.date &&
+                            task.description === newTask.description
+                        )
+                        
+                        if (!taskExists) {
+                            // Add new task and update counts
+                            employeeData[employeeIndex].tasks.push(newTask)
+                            employeeData[employeeIndex].taskCounts.isNew += 1
+                            
+                            // Update localStorage immediately
+                            localStorage.setItem('employees', JSON.stringify(employeeData))
+                        }
+                    }
+                })
+            }
+            
+            setEmployees(employeeData)
+
+            // Extract unique categories from all tasks
+            const allCategories = new Set()
+            employeeData.forEach(employee => {
+                employee.tasks.forEach(task => {
+                    allCategories.add(task.category)
+                })
+            })
+            setCategories(Array.from(allCategories))
+        }
+
+        // Load initial data
+        loadData()
+
+        // Add event listener for storage changes
+        window.addEventListener('storage', loadData)
+
+        // Cleanup listener on unmount
+        return () => {
+            window.removeEventListener('storage', loadData)
+        }
+    }, [])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -21,9 +78,44 @@ const AllTask = () => {
         }))
     }
 
-    const submitHandler = (e)=>{
+    const submitHandler = (e) => {
         e.preventDefault()
-        console.log("task created.....", taskData)
+        
+        const data = JSON.parse(localStorage.getItem('employees'))
+        
+        // Generate new taskId
+        const assignedEmployee = data.find(e => e.firstName === taskData.assignedTo)
+        const newTaskId = assignedEmployee.tasks.length + 1
+
+        const newTask = {
+            ...taskData,
+            taskId: newTaskId,
+            active: false,
+            isNew: true,
+            completed: false,
+            failed: false
+        }
+
+        // Update employee data
+        data.forEach(employee => {
+            if (employee.firstName === taskData.assignedTo) {
+                employee.tasks.push(newTask)
+                employee.taskCounts.isNew += 1
+            }
+        })
+
+        // Store in employees localStorage
+        localStorage.setItem('employees', JSON.stringify(data))
+        
+        // Store in newAddedData localStorage
+        const newAddedData = JSON.parse(localStorage.getItem('newAddedData')) || []
+        newAddedData.push(newTask)
+        localStorage.setItem('newAddedData', JSON.stringify(newAddedData))
+        
+        // Update state
+        setEmployees(data)
+
+        // Reset form
         setTaskData({
             category: '',
             date: '',
@@ -31,6 +123,11 @@ const AllTask = () => {
             description: '',
             assignedTo: ''
         })
+
+        setShowCreateTask(false)
+        
+        // Trigger storage event manually since we're in the same window
+        window.dispatchEvent(new Event('storage'))
     }
 
     return (
@@ -42,8 +139,8 @@ const AllTask = () => {
                             All Tasks Overview
                         </span>
                     </h1>
-                    
-                    <button 
+
+                    <button
                         onClick={() => setShowCreateTask(true)}
                         className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-semibold shadow-md hover:from-blue-600 hover:to-purple-600 active:shadow-inner transition-all duration-300 flex items-center justify-center gap-3 transform hover:scale-[1.02] w-full sm:w-auto"
                     >
@@ -62,9 +159,9 @@ const AllTask = () => {
                     </div>
 
                     <div className="h-[450px] sm:h-[500px] lg:h-[600px] overflow-auto custom-scrollbar pr-2 space-y-4">
-                        {authData.employee.map((e, index) => (
-                            <div 
-                                key={index} 
+                        {employees.map((e, index) => (
+                            <div
+                                key={index}
                                 className="bg-white/95 flex items-center justify-between rounded-xl py-3 sm:py-4 px-4 sm:px-8 transform hover:scale-[1.02] transition-all duration-300 hover:shadow-lg border border-gray-100/50 backdrop-blur-sm group"
                             >
                                 <h2 className='w-1/5 text-gray-700 font-semibold text-center text-sm sm:text-base truncate'>{e.firstName}</h2>
@@ -97,7 +194,7 @@ const AllTask = () => {
             {showCreateTask && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
                     <div className="relative w-full max-w-2xl transform hover:scale-[1.01] transition-transform duration-300">
-                        <button 
+                        <button
                             onClick={() => setShowCreateTask(false)}
                             className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors duration-300 font-medium"
                         >
@@ -107,20 +204,27 @@ const AllTask = () => {
                             <div className="h-2 bg-gradient-to-r from-blue-400 to-purple-400"></div>
                             <form className="p-4 sm:p-6 lg:p-8 space-y-6" onSubmit={submitHandler}>
                                 <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
-                                    <input
-                                        type="text"
+                                    <select
                                         name="category"
                                         value={taskData.category}
                                         onChange={handleChange}
-                                        placeholder="Category"
                                         className="px-4 py-2 text-sm bg-gray-50 text-gray-800 rounded-full placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 hover:bg-gray-100 w-full sm:w-auto border border-gray-200"
-                                    />
+                                        required
+                                    >
+                                        <option value="" className="text-gray-900">Select Category</option>
+                                        {categories.map((category, index) => (
+                                            <option key={index} value={category} className="text-gray-900">
+                                                {category}
+                                            </option>
+                                        ))}
+                                    </select>
                                     <input
                                         type="date"
                                         name="date"
                                         value={taskData.date}
                                         onChange={handleChange}
                                         className="text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 hover:bg-gray-100 w-full sm:w-auto"
+                                        required
                                     />
                                 </div>
                                 <input
@@ -130,6 +234,7 @@ const AllTask = () => {
                                     onChange={handleChange}
                                     placeholder="Task Title"
                                     className="w-full text-xl sm:text-2xl font-bold text-gray-800 bg-transparent border-b-2 border-gray-200 focus:outline-none focus:border-blue-400 transition-all duration-300 px-2 py-1 placeholder-gray-400"
+                                    required
                                 />
                                 <textarea
                                     name="description"
@@ -137,16 +242,25 @@ const AllTask = () => {
                                     onChange={handleChange}
                                     placeholder="Task Description"
                                     className="w-full text-gray-700 bg-gray-50 border border-gray-200 focus:outline-none focus:border-blue-400 transition-all duration-300 resize-none h-24 sm:h-32 rounded-lg p-3 placeholder-gray-400 hover:bg-gray-100"
+                                    required
                                 />
-                                <input
-                                    type="text"
+
+                                <select
                                     name="assignedTo"
                                     value={taskData.assignedTo}
                                     onChange={handleChange}
-                                    placeholder="Assigned To (email or username)"
-                                    className="w-full text-gray-800 bg-gray-50 rounded-lg px-4 py-2.5 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 hover:bg-gray-100 border border-gray-200"
-                                />
-                                <button 
+                                    className="w-full text-gray-800 bg-gray-50 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 hover:bg-gray-100 border border-gray-200"
+                                    required
+                                >
+                                    <option value="" className="text-gray-900">👥 Select team member...</option>
+                                    {employees.map((employee, index) => (
+                                        <option key={index} value={employee.firstName} className="text-gray-900">
+                                            {employee.firstName}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <button
                                     type="submit"
                                     className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-semibold shadow-md hover:from-blue-600 hover:to-purple-600 active:shadow-inner transition-all duration-300 flex items-center justify-center gap-3 transform hover:scale-[1.02]"
                                 >
